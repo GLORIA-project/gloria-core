@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<import resource="classpath*:basic-operation-beans.xml" />
+	<import resource="classpath*:basic-parameter-beans.xml" />
+	
+	<bean id="sql-experiment-session-factory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="experiment-mapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface"
+			value="eu.gloria.gs.services.experiment.base.data.dbservices.ExperimentDBService" />
+		<property name="sqlSessionFactory" ref="sql-experiment-session-factory" />
+	</bean>
+
+	<bean id="rt-script-mapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface"
+			value="eu.gloria.gs.services.experiment.script.data.dbservices.RTScriptDBService" />
+		<property name="sqlSessionFactory" ref="sql-experiment-session-factory" />
+	</bean>
+
+	<bean id="experiment-adapter"
+		class="eu.gloria.gs.services.experiment.base.data.ExperimentDBAdapter"
+		scope="singleton" lazy-init="true">
+		<property name="experimentDBService" ref="experiment-mapper"></property>
+		<property name="parameterFactory" ref="parameter-factory"></property>
+		<property name="operationFactory" ref="operation-factory"></property>
+	</bean>
+
+	<bean id="rt-script-adapter"
+		class="eu.gloria.gs.services.experiment.script.data.RTScriptDBAdapter"
+		scope="singleton" lazy-init="true">
+		<property name="experimentDBService" ref="experiment-mapper"></property>
+		<property name="RTScriptDBService" ref="rt-script-mapper"></property>		
+	</bean>
+
+	<bean id="model-factory"
+		class="eu.gloria.gs.services.experiment.base.models.ExperimentModelFactory"
+		scope="singleton" lazy-init="true">
+		<property name="adapter" ref="experiment-adapter"></property>
+		<property name="parameterFactory" ref="parameter-factory"></property>
+		<property name="operationFactory" ref="operation-factory"></property>
+	</bean>
+
+	<bean id="model-manager"
+		class="eu.gloria.gs.services.experiment.base.models.ExperimentModelManager"
+		scope="singleton" lazy-init="true">
+		<property name="modelFactory" ref="model-factory"></property>
+		<property name="adapter" ref="experiment-adapter"></property>
+	</bean>
+
+	<bean id="context-factory"
+		class="eu.gloria.gs.services.experiment.base.contexts.ExperimentContextFactory"
+		scope="singleton" lazy-init="true">
+		<property name="adapter" ref="experiment-adapter"></property>
+	</bean>
+
+	<bean id="context-manager"
+		class="eu.gloria.gs.services.experiment.base.contexts.ExperimentContextManager"
+		scope="singleton" lazy-init="true">
+		<property name="contextFactory" ref="context-factory">
+		</property>
+	</bean>
+
+	<bean id="rt-booker" class="eu.gloria.gs.services.experiment.reservation.RTBooker"
+		lazy-init="true">
+		<property name="RTRepository" ref="rtRepository"></property>
+	</bean>
+
+	<bean id="experiment-booker"
+		class="eu.gloria.gs.services.experiment.reservation.ExperimentBooker"
+		lazy-init="true">
+		<property name="adapter" ref="experiment-adapter"></property>
+		<property name="RTBooker" ref="rt-booker"></property>
+	</bean>
+
+	<bean id="custom-model"
+		class="eu.gloria.gs.services.experiment.base.models.CustomExperimentModel"
+		lazy-init="true">
+		<property name="adapter" ref="experiment-adapter"></property>
+		<property name="parameterFactory" ref="parameter-factory"></property>
+	</bean>
+
+	<bean id="parameter-factory"
+		class="eu.gloria.gs.services.experiment.base.parameters.ExperimentParameterFactory"
+		scope="singleton">
+	</bean>
+
+	<bean id="operation-factory"
+		class="eu.gloria.gs.services.experiment.base.operations.ExperimentOperationFactory"
+		scope="singleton">
+	</bean>
+
+	<bean id="experiment-context-service"
+		class="eu.gloria.gs.services.experiment.base.models.ExperimentContextService"
+		scope="singleton" abstract="true">
+		<property name="adapter" ref="experiment-adapter"></property>
+		<property name="username" ref="experimentUsername"></property>
+		<property name="password" ref="experimentPassword"></property>
+	</bean>
+
+	<bean id="parameter-context"
+		class="eu.gloria.gs.services.experiment.base.parameters.ParameterContext"
+		scope="prototype" abstract="true">
+		<property name="adapter" ref="experiment-adapter"></property>
+	</bean>
+
+	<bean id="operation-context"
+		class="eu.gloria.gs.services.experiment.base.operations.OperationContext"
+		scope="prototype" abstract="true">
+		<property name="adapter" ref="experiment-adapter"></property>
+	</bean>
+
+	<bean id="experiment-operation"
+		class="eu.gloria.gs.services.experiment.base.operations.BeanExperimentOperation"
+		abstract="true" scope="singleton">
+	</bean>
+
+	<bean id="experiment-parameter"
+		class="eu.gloria.gs.services.experiment.base.parameters.BeanExperimentParameter"
+		abstract="true" scope="singleton">
+	</bean>
+
+
+</beans>

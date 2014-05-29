@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="sqlSchedulerSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="schedulerMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface"
+			value="eu.gloria.gs.services.scheduler.data.dbservices.SchedulerDBService" />
+		<property name="sqlSessionFactory" ref="sqlSchedulerSessionFactory" />
+	</bean>
+
+	<bean id="schedulerAdapter" class="eu.gloria.gs.services.scheduler.data.SchedulerAdapter">
+		<property name="schedulerDBService" ref="schedulerMapper"></property>
+	</bean>
+	
+</beans>

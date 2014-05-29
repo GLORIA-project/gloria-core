@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="eu.gloria.gs.services.repository.image.data.dbservices.ImageDBService">
+
+	<update id="create">
+		CREATE TABLE IF NOT EXISTS `image` (
+		`idimage` int(11) NOT NULL AUTO_INCREMENT,
+		`rt` varchar(50) NOT NULL,
+		`user` varchar(40) NOT NULL,
+		`jpg` varchar(200) DEFAULT NULL,
+		`date` datetime NOT NULL,
+		`rid` int(11) DEFAULT NULL,
+		`local_id` varchar(50) NOT NULL,
+		`ccd` varchar(40) NOT NULL,
+		`fits` varchar(200) DEFAULT NULL,
+		`target` text,
+		`exposure` double NOT NULL,
+		`host` varchar(200) DEFAULT NULL,
+		`jpg_gen` int(1) DEFAULT NULL,
+		`fits_gen` int(1) DEFAULT NULL,		
+		PRIMARY KEY (`idimage`),
+		KEY `fk_image_rt` (`rt`),
+		KEY `fk_image_user` (`user`),
+		KEY `fk_image_rid` (`rid`),
+		KEY `fk_image_ccd` (`ccd`)
+		) ENGINE=InnoDB AUTO_INCREMENT=11223 DEFAULT CHARSET=utf8;
+	</update>
+
+	<select id="get"
+		resultType="eu.gloria.gs.services.repository.image.data.dbservices.ImageEntry">
+		SELECT * FROM
+		`image`
+		WHERE
+		idimage=#{id_}
+	</select>
+
+	<select id="getRandom"
+		resultType="eu.gloria.gs.services.repository.image.data.dbservices.ImageEntry">
+		SELECT * FROM
+		`image`
+		WHERE NOT(host is NULL) ORDER BY RAND()
+		LIMIT #{count_}
+	</select>
+
+	<select id="getUserRandom"
+		resultType="eu.gloria.gs.services.repository.image.data.dbservices.ImageEntry">
+		SELECT * FROM
+		`image`
+		WHERE NOT(host is NULL) AND
+		user=#{user_} ORDER BY RAND()
+		LIMIT #{count_}
+	</select>
+
+	<select id="getByUser"
+		resultType="eu.gloria.gs.services.repository.image.data.dbservices.ImageEntry">
+		SELECT * FROM
+		`image`
+		WHERE
+		user=#{user_}
+	</select>
+
+	<select id="getByJpg"
+		resultType="eu.gloria.gs.services.repository.image.data.dbservices.ImageEntry">
+		SELECT * FROM
+		`image`
+		WHERE
+		host=#{host_} AND local_id=#{lid_}
+		AND jpg_gen=1
+	</select>
+
+	<select id="getByFits"
+		resultType="eu.gloria.gs.services.repository.image.data.dbservices.ImageEntry">
+		SELECT * FROM
+		`image`
+		WHERE
+		host=#{host_} AND local_id=#{lid_}
+		AND fits_gen=1
+	</select>
+
+	<select id="getByRT"
+		resultType="eu.gloria.gs.services.repository.image.data.dbservices.ImageEntry">
+		SELECT * FROM
+		`image`
+		WHERE
+		rt=#{rt_}
+	</select>
+
+	<select id="getByRTLocalId"
+		resultType="eu.gloria.gs.services.repository.image.data.dbservices.ImageEntry">
+		SELECT * FROM
+		`image`
+		WHERE
+		rt=#{rt_} AND
+		local_id=#{lid_}
+	</select>
+
+	<select id="getByReservation"
+		resultType="eu.gloria.gs.services.repository.image.data.dbservices.ImageEntry">
+		SELECT * FROM
+		`image`
+		WHERE
+		rid=#{rid_}
+	</select>
+
+	<select id="getAllBetweenDates" resultType="int">
+		SELECT idimage FROM
+		`image`
+		WHERE date &gt;=
+		#{from_}
+		AND date
+		&lt;=#{to_} LIMIT #{limit_}
+	</select>
+	
+	<select id="getRandomBetweenDates" resultType="int">
+		SELECT idimage FROM
+		`image`
+		WHERE date &gt;=
+		#{from_}
+		AND date
+		&lt;=#{to_} ORDER BY RAND() LIMIT #{limit_}
+	</select>
+
+	<select id="getAllObjectImages" resultType="int">
+		SELECT idimage FROM
+		`image`
+		WHERE target LIKE #{object_}
+	</select>
+
+	<select id="getAllObjectImagesBetweenDates" resultType="int">
+		SELECT
+		idimage FROM
+		`image`
+		WHERE target LIKE #{object_} AND date &gt;=
+		#{from_}
+		AND date
+		&lt;=#{to_}
+	</select>
+
+	<insert id="save"
+		parameterType="eu.gloria.gs.services.repository.image.data.dbservices.ImageEntry">
+		INSERT INTO
+		`image`
+		(rt, user, date,
+		local_id, ccd, target,
+		exposure)
+		VALUE (
+		#{rt}, #{user}, #{date}, #{local_id}, #{ccd},
+		#{target}, #{exposure})
+	</insert>
+
+	<delete id="remove">
+		DELETE FROM `image`
+		WHERE
+		idimage=#{id_}
+	</delete>
+
+	<!-- <delete id="removeByUser"> DELETE FROM `image` WHERE user=#{user_} 
+		</delete> -->
+
+	<update id="setUser">
+		UPDATE `image`
+		SET
+		user=#{user_}
+		WHERE idimage
+		=#{id_}
+	</update>
+
+	<update id="setReservation">
+		UPDATE `image`
+		SET
+		rid=#{rid_}
+		WHERE
+		idimage
+		=#{id_}
+	</update>
+
+	<update id="setJpg">
+		UPDATE `image`
+		SET
+		host=#{host_}, jpg_gen=1
+		WHERE
+		idimage
+		=#{id_}
+	</update>
+
+	<update id="setFits">
+		UPDATE `image`
+		SET
+		host=#{host_}, fits_gen=1
+		WHERE
+		idimage
+		=#{id_}
+	</update>
+
+	<update id="setJpgByRTLocalId">
+		UPDATE `image`
+		SET
+		host=#{host_}, jpg_gen=1
+		WHERE
+		rt=#{rt_} AND
+		local_id=#{lid_}
+	</update>
+
+	<update id="setFitsByRTLocalId">
+		UPDATE `image`
+		SET
+		host=#{host_}, fits_gen=1
+		WHERE
+		rt=#{rt_} AND
+		local_id=#{lid_}
+	</update>
+
+	<update id="setTargetByRTLocalId">
+		UPDATE `image`
+		SET
+		target=#{target_}
+		WHERE
+		rt=#{rt_} AND
+		local_id=#{lid_}
+	</update>
+
+	<select id="contains" resultType="boolean">
+		SELECT count(*)>0 FROM
+		`image`
+		WHERE
+		idimage=#{id_}
+	</select>
+
+	<select id="containsJpg" resultType="boolean">
+		SELECT count(*)>0 FROM
+		`image`
+		WHERE
+		host=#{host_} AND local_id=#{lid_} AND jpg_gen=1
+	</select>
+
+	<select id="containsFits" resultType="boolean">
+		SELECT count(*)>0 FROM
+		`image`
+		WHERE
+		host=#{host_} AND local_id=#{lid_} AND fits_gen=1
+	</select>
+
+	<select id="containsRTLocalId" resultType="boolean">
+		SELECT count(*)>0 FROM
+		`image`
+		WHERE
+		rt=#{rt_} AND local_id=#{lid_}
+	</select>
+
+	<select id="getAllWithoutUrl"
+		resultType="eu.gloria.gs.services.repository.image.data.dbservices.ImageEntry">
+		SELECT * FROM
+		`image`
+		WHERE
+		host IS NULL
+	</select>
+
+</mapper>
