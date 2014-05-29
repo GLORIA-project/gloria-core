@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="eu.gloria.gs.services.api.data.dbservices.UserVerificationService">
+
+	<update id="create">
+		CREATE TABLE IF NOT EXISTS `user_verification` (
+		`alias` varchar(50) NOT NULL,
+		`email` varchar(100) NOT NULL,
+		`password`
+		varchar(32) NOT NULL,
+		`code` varchar(150) NOT NULL,
+		`creationDate`
+		datetime NOT NULL,
+		`status` varchar(5) NOT NULL DEFAULT 'READY',
+		`sendDate` datetime DEFAULT NULL,
+		`verificationDate` datetime DEFAULT
+		NULL,
+		`reset` int(11) NOT NULL DEFAULT '0',
+		`newPassword` varchar(32)
+		DEFAULT NULL,
+		`resetRequestDate` datetime DEFAULT NULL,
+		`resetDoneDate`
+		datetime DEFAULT NULL,
+		`chpass` int(11) NOT NULL DEFAULT '0',
+		`chpassRequestDate` datetime DEFAULT NULL,
+		`chpassDoneDate` datetime
+		DEFAULT NULL,
+		PRIMARY KEY (`email`,`code`)
+		) ENGINE=InnoDB DEFAULT
+		CHARSET=utf8;
+	</update>
+
+	<select id="getByAlias"
+		resultType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		SELECT * FROM
+		`user_verification`
+		WHERE
+		alias=#{alias_}
+	</select>
+
+	<select id="getByEmail"
+		resultType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		SELECT * FROM
+		`user_verification`
+		WHERE
+		email=#{email_}
+	</select>
+
+	<select id="getByCode"
+		resultType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		SELECT * FROM
+		`user_verification`
+		WHERE
+		code=#{code_}
+	</select>
+
+	<insert id="save"
+		parameterType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		INSERT INTO
+		`user_verification`
+		(alias, email,
+		password,
+		code, creationDate)
+		VALUE ( #{alias},
+		#{email},
+		#{password}, #{code},
+		NOW())
+	</insert>
+
+	<update id="clear">
+		UPDATE `user_verification`
+		SET creationDate=NOW(),
+		sendDate=NULL,verificationDate=NULL,status='READY'
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<insert id="saveChecked"
+		parameterType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		INSERT INTO
+		`user_verification`
+		(alias, email,
+		password,
+		code, creationDate, verificationDate, status)
+		VALUE ( #{alias},
+		#{email},
+		#{password}, #{code},
+		NOW(), NOW(), 'CHECK')
+	</insert>
+
+	<delete id="removeByCode">
+		DELETE FROM `user_verification`
+		WHERE
+		code=#{code_}
+	</delete>
+
+	<delete id="removeByAlias">
+		DELETE FROM `user_verification`
+		WHERE
+		alias=#{alias_}
+	</delete>
+
+	<select id="containsAlias" resultType="boolean">
+		SELECT count(*)>0 FROM
+		`user_verification`
+		WHERE
+		alias=#{alias_}
+	</select>
+
+	<select id="containsEmail" resultType="boolean">
+		SELECT count(*)>0 FROM
+		`user_verification`
+		WHERE
+		email=#{email_}
+	</select>
+
+	<update id="setAlreadySent">
+		UPDATE `user_verification`
+		SET status='SENT',
+		sendDate=NOW()
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<update id="setPassword">
+		UPDATE `user_verification`
+		SET password=#{password_}
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<update id="setNewPasswordByAlias">
+		UPDATE `user_verification` SET
+		newPassword=#{password_} WHERE alias=#{alias_}
+	</update>
+
+	<update id="setNewPasswordByEmail">
+		UPDATE `user_verification` SET
+		newPassword=#{password_} WHERE email=#{email_}
+	</update>
+
+	<update id="setReadyToSend">
+		UPDATE `user_verification`
+		SET status='READY',
+		creationDate=NOW(),reset=0
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<update id="setVerified">
+		UPDATE `user_verification`
+		SET status='CHECK',
+		verificationDate=NOW()
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<update id="setVerificationObsolete">
+		UPDATE `user_verification`
+		SET status='OBS'
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<update id="setResetRequestByAlias">
+		UPDATE `user_verification`
+		SET reset=1,
+		resetRequestDate=NOW()
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<update id="setChangePasswordRequestByAlias">
+		UPDATE `user_verification`
+		SET chpass=1,
+		chpassRequestDate=NOW()
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<update id="setResetRequestByEmail">
+		UPDATE `user_verification`
+		SET reset=1,
+		resetRequestDate=NOW()
+		WHERE
+		email=#{email_}
+	</update>
+
+	<update id="setChangePasswordRequestByEmail">
+		UPDATE `user_verification`
+		SET chpass=1,
+		chpassRequestDate=NOW()
+		WHERE
+		email=#{email_}
+	</update>
+
+	<update id="clearResetRequest">
+		UPDATE `user_verification`
+		SET reset=0,
+		resetDoneDate=NOW()
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<update id="clearChangePasswordRequest">
+		UPDATE `user_verification`
+		SET chpass=0,
+		chpassDoneDate=NOW()
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<update id="setResetObsolete">
+		UPDATE `user_verification`
+		SET reset=3
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<update id="setChangePasswordObsolete">
+		UPDATE `user_verification`
+		SET chpass=3
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<select id="isResetObsolete" resultType="boolean">
+		resultType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		SELECT reset = 3 FROM `user_verification`
+		WHERE alias =
+		#{alias_}
+	</select>
+
+	<select id="isChangePasswordObsolete" resultType="boolean">
+		resultType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		SELECT chpass = 3 FROM `user_verification`
+		WHERE alias =
+		#{alias_}
+	</select>
+
+	<update id="setWaitingForReset">
+		UPDATE `user_verification`
+		SET reset=2
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<update id="setWaitingForChangePassword">
+		UPDATE `user_verification`
+		SET chpass=2
+		WHERE
+		alias=#{alias_}
+	</update>
+
+	<select id="isWaitingForReset" resultType="boolean">
+		SELECT reset = 2 FROM
+		`user_verification`
+		WHERE alias =
+		#{alias_}
+	</select>
+
+	<select id="isWaitingForChangePassword" resultType="boolean">
+		SELECT chpass
+		= 2 FROM `user_verification`
+		WHERE alias =
+		#{alias_}
+	</select>
+
+	<select id="isWaitingForVerification" resultType="boolean">
+		SELECT
+		status='SENT' FROM `user_verification`
+		WHERE alias =
+		#{alias_}
+	</select>
+
+	<select id="isObsolete" resultType="boolean">
+		SELECT status='OBS' FROM
+		`user_verification`
+		WHERE alias =
+		#{alias_}
+	</select>
+
+	<select id="isResetRequested" resultType="boolean">
+		SELECT reset = 1 FROM
+		`user_verification`
+		WHERE alias =
+		#{alias_}
+	</select>
+
+	<select id="isChangePasswordRequested" resultType="boolean">
+		SELECT chpass
+		= 1 FROM `user_verification`
+		WHERE alias =
+		#{alias_}
+	</select>
+
+	<select id="getPendingVerifications"
+		resultType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		SELECT * FROM `user_verification`
+		WHERE
+		status='READY' ORDER
+		BY RAND() limit
+		10
+	</select>
+
+	<select id="getWaitingVerifications"
+		resultType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		SELECT * FROM `user_verification`
+		WHERE
+		status='SENT' ORDER
+		BY RAND() limit
+		10
+	</select>
+
+	<select id="getPendingResetRequests"
+		resultType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		SELECT * FROM `user_verification`
+		WHERE
+		reset = 1 ORDER BY
+		RAND() limit
+		10
+	</select>
+
+	<select id="getPendingChangePasswordRequests"
+		resultType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		SELECT * FROM `user_verification`
+		WHERE
+		chpass = 1 ORDER BY
+		RAND() limit
+		10
+	</select>
+
+	<select id="getWaitingResetRequests"
+		resultType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		SELECT * FROM `user_verification`
+		WHERE
+		reset = 2 ORDER BY
+		RAND() limit
+		10
+	</select>
+
+	<select id="getWaitingChangePasswordRequests"
+		resultType="eu.gloria.gs.services.api.data.dbservices.UserVerificationEntry">
+		SELECT * FROM `user_verification`
+		WHERE
+		chpass = 2 ORDER BY
+		RAND() limit
+		10
+	</select>
+
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean scope="singleton" id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/gloriaDB" />
+	</bean>
+	
+	<bean id="mailServletAddress" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/apiLocalAddress" />
+	</bean>
+
+	<bean id="hostAddress" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/apiHostAddress" />
+	</bean>
+
+	<bean id="hostPort" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/apiHostPort" />
+	</bean>
+
+	<bean id="sqlAPISessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="apiMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface"
+			value="eu.gloria.gs.services.api.data.dbservices.UserDataService" />
+		<property name="sqlSessionFactory" ref="sqlAPISessionFactory" />
+	</bean>
+
+	<bean id="verificationMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface"
+			value="eu.gloria.gs.services.api.data.dbservices.UserVerificationService" />
+		<property name="sqlSessionFactory" ref="sqlAPISessionFactory" />
+	</bean>
+
+	<bean id="userDataAdapter" class="eu.gloria.gs.services.api.data.UserDataAdapter"
+		scope="singleton" lazy-init="true">
+		<property name="userDataService" ref="apiMapper"></property>
+		<property name="userVerificationService" ref="verificationMapper"></property>
+	</bean>
+
+	<bean id="applicationContextProvider"
+		class="eu.gloria.gs.services.api.security.ApplicationContextProvider"></bean>
+
+	<bean id="adminUsername" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/adminUsername" />
+	</bean>
+
+	<bean id="adminPassword" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/adminPassword" />
+	</bean>
+	
+	<bean id="hostEmailAddress" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/hostEmailAddress" />
+	</bean>
+
+	<bean id="hostEmailPassword" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/hostEmailPassword" />
+	</bean>
+	
+	<bean id="redirectUrl" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/redirectUrl" />
+	</bean>
+	
+	<bean id="verificationMonitor"
+		class="eu.gloria.gs.services.api.mail.VerificationMonitor"
+		scope="singleton">
+		<property name="adapter" ref="userDataAdapter"></property>
+		<property name="username" ref="adminUsername"></property>
+		<property name="password" ref="adminPassword"></property>
+		<property name="mailSender" ref="mailSender"></property>
+	</bean>
+	
+	<bean id="mailSender"
+		class="eu.gloria.gs.services.api.mail.SendMailSSL"
+		scope="singleton">
+		<property name="hostAddress" ref="hostEmailAddress"></property>
+		<property name="hostPassword" ref="hostEmailPassword"></property>
+		<property name="apiAddress" ref="mailServletAddress"></property>
+	</bean>
+
+</beans>
