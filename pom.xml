@@ -1,17 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>eu.gloria.gs.services</groupId>
-  <artifactId>gloria</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>gloria-services</name>  
-  <parent>
-  	<groupId>eu.gloria</groupId>
-  	<artifactId>gloria-base</artifactId>
-  	<version>1.0.2</version>
-  </parent>
+  <groupId>eu.gloria</groupId>
+  <artifactId>gloria-core</artifactId>
+  <version>1.0.0</version>
+  <name>GLORIA Core</name>
+  <!--<parent>
+		<groupId>eu.gloria</groupId>
+		<artifactId>gloria-base</artifactId>
+		<version>1.0.2</version>
+		<relativePath>desc/pom.xml</relativePath>
+	</parent>-->
   <modules>
   	<module>gloria-soap/pom.xml</module>
   	<module>gloria-rest/pom.xml</module>
   </modules>
+  
   <packaging>pom</packaging>
 </project>
