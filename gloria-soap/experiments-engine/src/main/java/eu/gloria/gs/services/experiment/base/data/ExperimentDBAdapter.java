@@ -865,8 +865,10 @@ public class ExperimentDBAdapter extends LoggerEntity {
 		try {
 			int experimentId = service.getExperimentId(experiment);
 
-			if (this.anyRTReservationBetween(telescopes, timeSlot)) {
-				throw new ExperimentException("already reserved");
+			if (telescopes != null) {
+				if (this.anyRTReservationBetween(telescopes, timeSlot)) {
+					throw new ExperimentException("already reserved");
+				}
 			}
 
 			ReservationEntry reservationEntry = new ReservationEntry();
