@@ -11,6 +11,7 @@ import eu.gloria.gs.services.core.LogStore;
 import eu.gloria.gs.services.core.client.GSClientProvider;
 import eu.gloria.gs.services.core.tasks.ServerThread;
 import eu.gloria.gs.services.log.action.Action;
+import eu.gloria.gs.services.log.action.LogType;
 
 public class VerificationMonitor extends ServerThread {
 
@@ -21,7 +22,7 @@ public class VerificationMonitor extends ServerThread {
 	private SendMailSSL mailSender;
 	private static boolean analyzeWaitingOnes = true;
 	private static int waitingCount = 0;
-	private static int MS_PER_DAY = 86400000;
+	private static int MS_PER_3DAY = 3 * 86400000;
 
 	/**
 	 * @param name
@@ -57,7 +58,6 @@ public class VerificationMonitor extends ServerThread {
 	
 	@Override
 	public void end() {
-//		GSClientProvider.clearCredentials();
 		super.end();
 	}
 
@@ -65,18 +65,23 @@ public class VerificationMonitor extends ServerThread {
 	protected void doWork() {
 
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(1000);
 
 			if (waitingCount < 1) {
 				waitingCount++;
 			} else {
 				analyzeWaitingOnes = true;
+				waitingCount = 0;
 			}
 		} catch (InterruptedException e) {
-			log.warn(e.getMessage());
+			log(LogType.WARNING, e.getMessage());
 		}
 
+		try {
 		GSClientProvider.setCredentials(this.username, this.password);
+		} catch (Exception e) {
+			log(LogType.ERROR, e.getMessage());
+		}
 
 		try {
 			List<UserVerificationEntry> remaining = adapter
@@ -88,7 +93,9 @@ public class VerificationMonitor extends ServerThread {
 				this.adapter.setVerificationSent(entry.getAlias());
 			}
 		} catch (UserDataAdapterException e) {
+			log(LogType.ERROR, e.getAction());
 		} catch (Exception e) {
+			log(LogType.ERROR, e.getMessage());
 		}
 
 		try {
@@ -101,7 +108,9 @@ public class VerificationMonitor extends ServerThread {
 				this.adapter.setWaitForReset(entry.getAlias());
 			}
 		} catch (UserDataAdapterException e) {
+			log(LogType.ERROR, e.getAction());
 		} catch (Exception e) {
+			log(LogType.ERROR, e.getMessage());
 		}
 
 		try {
@@ -115,7 +124,9 @@ public class VerificationMonitor extends ServerThread {
 				this.adapter.setWaitForChangePassword(entry.getAlias());
 			}
 		} catch (UserDataAdapterException e) {
+			log(LogType.ERROR, e.getAction());
 		} catch (Exception e) {
+			log(LogType.ERROR, e.getMessage());
 		}
 
 		if (analyzeWaitingOnes) {
@@ -129,12 +140,14 @@ public class VerificationMonitor extends ServerThread {
 						.getPendingResetRequests();
 
 				for (UserVerificationEntry entry : pendingResets) {
-					if (now.getTime() - entry.getSentDate().getTime() > MS_PER_DAY) {
+					if (now.getTime() - entry.getSentDate().getTime() > MS_PER_3DAY) {
 						adapter.setVerificationObsolete(entry.getAlias());
 					}
 				}
 			} catch (UserDataAdapterException e) {
+				log(LogType.ERROR, e.getAction());
 			} catch (Exception e) {
+				log(LogType.ERROR, e.getMessage());
 			}
 
 			try {
@@ -143,13 +156,15 @@ public class VerificationMonitor extends ServerThread {
 						.getWaitingResetRequests();
 
 				for (UserVerificationEntry entry : waitingResets) {
-					if (now.getTime() - entry.getResetRequestDate().getTime() > MS_PER_DAY) {
+					if (now.getTime() - entry.getResetRequestDate().getTime() > MS_PER_3DAY) {
 						adapter.setResetObsolete(entry.getAlias());
 					}
 				}
 
 			} catch (UserDataAdapterException e) {
+				log(LogType.ERROR, e.getAction());
 			} catch (Exception e) {
+				log(LogType.ERROR, e.getMessage());
 			}
 
 			try {
@@ -158,13 +173,15 @@ public class VerificationMonitor extends ServerThread {
 						.getWaitingChangePasswordRequests();
 
 				for (UserVerificationEntry entry : waitingResets) {
-					if (now.getTime() - entry.getChPassRequestDate().getTime() > MS_PER_DAY) {
+					if (now.getTime() - entry.getChPassRequestDate().getTime() > MS_PER_3DAY) {
 						adapter.setChangePasswordObsolete(entry.getAlias());
 					}
 				}
 
 			} catch (UserDataAdapterException e) {
+				log(LogType.ERROR, e.getAction());
 			} catch (Exception e) {
+				log(LogType.ERROR, e.getMessage());
 			}
 		}
 	}

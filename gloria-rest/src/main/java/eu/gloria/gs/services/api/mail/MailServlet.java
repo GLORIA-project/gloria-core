@@ -58,8 +58,9 @@ public class MailServlet extends HttpServlet {
 				UserRepositoryInterface userRepository = GSClientProvider
 						.getUserRepositoryClient();
 				userRepository.createUser(entry.getEmail(), entry.getAlias());
-				userRepository.activateUser(entry.getEmail(), entry.getPassword());
-				
+				userRepository.activateUser(entry.getEmail(),
+						entry.getPassword());
+
 				userAdapter.deactivateOtherTokens(entry.getEmail(), "");
 
 				userAdapter.setVerificationChecked(entry.getAlias());
@@ -120,7 +121,6 @@ public class MailServlet extends HttpServlet {
 				}
 
 				userAdapter.deactivateOtherTokens(entry.getEmail(), "");
-
 				userAdapter.clearReset(alias);
 
 				res.setContentType("text/html;charset=UTF-8");
@@ -130,7 +130,22 @@ public class MailServlet extends HttpServlet {
 				res.sendRedirect(this.redirectUrl);
 
 			} else {
-				throw new ServletException("Reset request has expired");
+				res.setContentType("text/html");
+				PrintWriter out = res.getWriter();
+
+				out.println("<html>");
+				out.println("<body>");
+				out.println("<img src=http://gloria-project.eu/wp-content/uploads/2012/10/banner-transpa-notext-250.png>");
+				out.println("<h1>Your reset link has expired</h1>");
+				out.println("<hr>");
+				out.println("<p>It seems that you will need to request it again in the GLORIA Users website.</p>");
+				out.println("<hr>");
+				out.println("<p>Sorry for the inconveniences. Please, contact <strong>webmaster@gloria-project.eu</strong> to receive support.</p>");
+				out.println("<p><strong>The GLORIA team</strong></p>");
+				out.println("<p><i>Follow us in <a href=https://www.facebook.com/GLORIAProject?fref=ts>Facebook</a><i></p>");
+				out.println("</body>");
+				out.println("</html>");
+				// throw new ServletException("Reset request has expired");
 			}
 
 		} catch (UserDataAdapterException | UserRepositoryException e) {
@@ -182,7 +197,6 @@ public class MailServlet extends HttpServlet {
 				}
 
 				userAdapter.deactivateOtherTokens(entry.getEmail(), "");
-
 				userAdapter.clearChangePassword(alias);
 
 				res.setContentType("text/html;charset=UTF-8");
@@ -192,8 +206,23 @@ public class MailServlet extends HttpServlet {
 				res.sendRedirect(this.redirectUrl);
 
 			} else {
-				throw new ServletException(
-						"Change password request has expired");
+				res.setContentType("text/html");
+				PrintWriter out = res.getWriter();
+
+				out.println("<html>");
+				out.println("<body>");
+				out.println("<img src=http://gloria-project.eu/wp-content/uploads/2012/10/banner-transpa-notext-250.png>");
+				out.println("<h1>Your change password link has expired</h1>");
+				out.println("<hr>");
+				out.println("<p>It seems that you will need to request it again in the GLORIA Users website.</p>");
+				out.println("<hr>");
+				out.println("<p>Sorry for the inconveniences. Please, contact <strong>webmaster@gloria-project.eu</strong> to receive support.</p>");
+				out.println("<p><strong>The GLORIA team</strong></p>");
+				out.println("<p><i>Follow us in <a href=https://www.facebook.com/GLORIAProject?fref=ts>Facebook</a><i></p>");
+				out.println("</body>");
+				out.println("</html>");
+				// throw new ServletException(
+				// "Change password request has expired");
 			}
 
 		} catch (UserDataAdapterException | UserRepositoryException e) {

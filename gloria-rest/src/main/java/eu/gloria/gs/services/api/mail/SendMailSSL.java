@@ -12,9 +12,10 @@ import javax.mail.internet.MimeMessage;
 public class SendMailSSL {
 
 	private static Properties hostMailProps;
-	private String hostAddress;
-	private String hostPassword;
+	private static String hostAddress;
+	private static String hostPassword;
 	private String apiAddress;
+	private static Session session;
 
 	static {
 		hostMailProps = new Properties();
@@ -38,29 +39,31 @@ public class SendMailSSL {
 		return hostAddress;
 	}
 
-	public void setHostAddress(String hostAddress) {
-		this.hostAddress = hostAddress;
+	public void setHostAddress(String address) {
+		hostAddress = address;
 	}
 
 	public String getHostPassword() {
 		return hostPassword;
 	}
 
-	public void setHostPassword(String hostPassword) {
-		this.hostPassword = hostPassword;
+	public void setHostPassword(String password) {
+		hostPassword = password;
 	}
 
 	private void sendMail(String userEmail, String subject, String content) {
-		Session session = Session.getDefaultInstance(hostMailProps,
-				new javax.mail.Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication(hostAddress,
-								hostPassword);
-					}
-				});
+
+		if (session == null) {
+			session = Session.getInstance(hostMailProps,
+					new javax.mail.Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(hostAddress,
+									hostPassword);
+						}
+					});
+		}
 
 		try {
-
 			Message message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(hostAddress));
 			message.setRecipients(Message.RecipientType.TO,
@@ -70,7 +73,6 @@ public class SendMailSSL {
 			message.setSubject(subject);
 
 			Transport.send(message);
-
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}

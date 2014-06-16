@@ -303,7 +303,7 @@
 		WHERE
 		status='READY' ORDER
 		BY RAND() limit
-		10
+		2
 	</select>
 
 	<select id="getWaitingVerifications"
@@ -312,7 +312,7 @@
 		WHERE
 		status='SENT' ORDER
 		BY RAND() limit
-		10
+		2
 	</select>
 
 	<select id="getPendingResetRequests"
@@ -321,7 +321,7 @@
 		WHERE
 		reset = 1 ORDER BY
 		RAND() limit
-		10
+		2
 	</select>
 
 	<select id="getPendingChangePasswordRequests"
@@ -330,7 +330,7 @@
 		WHERE
 		chpass = 1 ORDER BY
 		RAND() limit
-		10
+		2
 	</select>
 
 	<select id="getWaitingResetRequests"
@@ -339,7 +339,7 @@
 		WHERE
 		reset = 2 ORDER BY
 		RAND() limit
-		10
+		2
 	</select>
 
 	<select id="getWaitingChangePasswordRequests"
@@ -348,7 +348,7 @@
 		WHERE
 		chpass = 2 ORDER BY
 		RAND() limit
-		10
+		2
 	</select>
 
 </mapper>
