@@ -160,18 +160,18 @@ public class ExperimentBooker {
 		if (pendingReservations != null) {
 			for (ReservationInformation reservation : pendingReservations) {
 
-				if (reservation.getExperiment().equals(experiment)) {
+//				if (reservation.getExperiment().equals(experiment)) {
 					TimeSlot reservedTimeSlot = reservation.getTimeSlot();
 					msReserved += reservedTimeSlot.getEnd().getTime()
 							- reservedTimeSlot.getBegin().getTime();
-				}
+//				}
 			}
 		}
 
 		long limitMs = MILLISECONDS_PER_30MIN;
 
 		if (adminMode) {
-			limitMs = limitMs * 4;
+			limitMs = limitMs * 8;
 		}
 
 		if (msReserved + msReservation <= limitMs) {
@@ -254,7 +254,8 @@ public class ExperimentBooker {
 					ExperimentType.ONLINE, username);
 
 			for (ReservationInformation reservation : reservations) {
-				if (reservation.getReservationId() == reservationId) {
+				if (reservation.getReservationId() == reservationId
+						&& !reservation.getStatus().equals("ERROR")) {
 					allowCancel = false;
 					break;
 				}

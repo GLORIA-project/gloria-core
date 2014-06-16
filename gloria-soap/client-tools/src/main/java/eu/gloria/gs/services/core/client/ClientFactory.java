@@ -31,24 +31,33 @@ public class ClientFactory {
 	public Object create() {
 
 		try {
+
+			String protocol = "http";
+
+			if (GSClientProvider.getPort().contains("443")) {
+				protocol = "https";
+			}
+
 			ClientProxyFactory factory = new ClientProxyFactory();
-			factory.setAddress("https://" + GSClientProvider.getHost() + ":"
-					+ GSClientProvider.getPort() + "/gloria-soap/services/"
-					+ portName);
+			factory.setAddress(protocol + "://" + GSClientProvider.getHost()
+					+ ":" + GSClientProvider.getPort()
+					+ "/gloria-soap/services/" + portName);
 			factory.setServiceClass(serviceClass);
 
 			Object service = factory.create();
 
 			Client proxy = ClientProxy.getClient(service);
 
-			HTTPConduit conduit = (HTTPConduit) proxy.getConduit();
+//			if ("https".equals(protocol)) {
+				HTTPConduit conduit = (HTTPConduit) proxy.getConduit();
 
-			TLSClientParameters tls = conduit.getTlsClientParameters();
-			if (tls == null)
-				tls = new TLSClientParameters();
-			tls.setDisableCNCheck(true);
-			tls.setUseHttpsURLConnectionDefaultHostnameVerifier(false);
-			conduit.setTlsClientParameters(tls);
+				TLSClientParameters tls = conduit.getTlsClientParameters();
+				if (tls == null)
+					tls = new TLSClientParameters();
+				tls.setDisableCNCheck(true);
+				tls.setUseHttpsURLConnectionDefaultHostnameVerifier(false);
+				conduit.setTlsClientParameters(tls);
+//			}
 
 			Endpoint cxfEndpoint = proxy.getEndpoint();
 			WSClientInterceptor interceptor = new WSClientInterceptor();
