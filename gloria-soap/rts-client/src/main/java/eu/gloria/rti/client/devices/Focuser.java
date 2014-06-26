@@ -27,7 +27,7 @@ public class Focuser extends DeviceHandler implements FocuserInterface {
 
 	@Override
 	public long getPosition() throws TeleoperationException {
-		return rts.getFocuserAbsolutePosition(this.focuser);
+		return rts.getFocuserPosition(this.focuser);
 	}
 
 	@Override

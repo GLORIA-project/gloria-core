@@ -1,5 +1,7 @@
 package eu.gloria.gs.services.teleoperation.focuser.operations;
 
+import java.util.ArrayList;
+
 import eu.gloria.gs.services.teleoperation.base.OperationArgs;
 import eu.gloria.gs.services.teleoperation.base.OperationReturn;
 import eu.gloria.gs.services.teleoperation.base.TeleoperationException;
@@ -15,8 +17,9 @@ public class GetPositionOperation extends FocuserOperation {
 	protected void operateFocuser(Focuser focuser, OperationReturn returns)
 			throws TeleoperationException {
 
-	//	long position = focuser.getPosition();
-		
-		// TODO: it is incomplete!
+		long position = focuser.getPosition();
+
+		returns.setReturns(new ArrayList<Object>());
+		returns.getReturns().add(position);
 	}
 }

@@ -629,18 +629,12 @@ public class RTSHandler implements ServerHandler {
 
 			ActivityStateMount state = mountDevice.getActivityState();
 
-			boolean parked = rtsPort.mntIsParked(null, mount);
-			boolean slewing = rtsPort.mntIsSlewing(null, mount);
 			boolean tracking = false;
 			try {
 				tracking = rtsPort.mntGetTracking(null, mount);
 			} catch (RtiError e) {				
 			}
 
-			if (parked)
-				return ActivityStateMount.PARKED;
-			if (slewing)
-				return ActivityStateMount.MOVING;
 			if (tracking)
 				return ActivityStateMount.TRACKING;
 
@@ -1043,6 +1037,23 @@ public class RTSHandler implements ServerHandler {
 		} catch (Exception e) {
 			throw new DeviceOperationFailedException(focuser,
 					DeviceType.FOCUS.name(), "relative move", e.getMessage());
+		}
+	}
+	
+	public long getFocuserPosition(String focuser) throws TeleoperationException {
+		if (rtsPort == null) {
+			throw new ServerNotAvailableException(host, port, null);
+		}
+
+		try {
+			if (rtsPort.focIsAbsolute(null, focuser)) {
+				return rtsPort.focGetPosition(null, focuser);
+			}
+
+			return 0;
+		} catch (Exception e) {
+			throw new DeviceOperationFailedException(focuser,
+					DeviceType.FOCUS.name(), "get position", e.getMessage());
 		}
 	}
 

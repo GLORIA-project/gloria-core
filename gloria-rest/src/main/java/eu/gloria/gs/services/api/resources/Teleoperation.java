@@ -310,6 +310,25 @@ public class Teleoperation extends GResource {
 			return this.processError(Status.INTERNAL_SERVER_ERROR, e);
 		}
 	}
+	
+	@GET
+	@Path("/focus/position/{rt}/{focus}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getFocuserPosition(@PathParam("rt") String rt,
+			@PathParam("focus") String focus) {
+
+		this.setupRegularAuthorization(request);
+
+		try {
+			long position = focusers.getPosition(rt, focus);
+
+			return this.processSuccess(position);
+		} catch (FocuserTeleoperationException e) {
+			return this.processError(Status.NOT_ACCEPTABLE, e);
+		} catch (DeviceOperationFailedException e) {
+			return this.processError(Status.INTERNAL_SERVER_ERROR, e);
+		}
+	}
 
 	@GET
 	@Path("/ccd/startContinue/{rt}/{ccd}")
