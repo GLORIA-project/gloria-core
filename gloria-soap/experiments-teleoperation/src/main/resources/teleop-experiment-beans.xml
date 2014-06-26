@@ -989,6 +989,28 @@
 			</map>
 		</property>
 	</bean>
+	
+	<bean id="GetFocuserPosition" parent="tele-operation">
+		<property name="parameterTypes">
+			<list>
+				<ref bean="object"></ref>
+				<ref bean="object"></ref>
+				<ref bean="object"></ref>
+			</list>
+		</property>
+		<property name="behaviour">
+			<map>
+				<entry
+					key="eu.gloria.gs.services.experiment.operations.GetFocuserPosition">
+					<list>
+						<value>arg0</value>
+						<value>arg1</value>
+						<value>arg2</value>
+					</list>
+				</entry>
+			</map>
+		</property>
+	</bean>
 
 	<bean id="SetTrackingRate" parent="tele-operation">
 		<property name="parameterTypes">

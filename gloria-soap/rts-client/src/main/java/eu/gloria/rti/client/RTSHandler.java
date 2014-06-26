@@ -629,14 +629,16 @@ public class RTSHandler implements ServerHandler {
 
 			ActivityStateMount state = mountDevice.getActivityState();
 
-			boolean tracking = false;
-			try {
-				tracking = rtsPort.mntGetTracking(null, mount);
-			} catch (RtiError e) {				
+			if (state.equals(ActivityStateMount.STOP)) {			
+				boolean tracking = false;
+				try {
+					tracking = rtsPort.mntGetTracking(null, mount);
+				} catch (RtiError e) {				
+				}
+	
+				if (tracking)
+					return ActivityStateMount.TRACKING;
 			}
-
-			if (tracking)
-				return ActivityStateMount.TRACKING;
 
 			return state;
 
@@ -1050,7 +1052,7 @@ public class RTSHandler implements ServerHandler {
 				return rtsPort.focGetPosition(null, focuser);
 			}
 
-			return 0;
+			return -1;
 		} catch (Exception e) {
 			throw new DeviceOperationFailedException(focuser,
 					DeviceType.FOCUS.name(), "get position", e.getMessage());
