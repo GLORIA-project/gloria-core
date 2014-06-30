@@ -93,7 +93,7 @@ public class ExperimentExecutor extends ServerThread {
 			for (ReservationInformation reservation : reservations) {
 
 				int reservationId = reservation.getReservationId();
-				
+
 				if (errorContexts.containsKey(reservationId)) {
 					Date lastUpdate = errorContexts.get(reservationId);
 					if (new Date().getTime() - lastUpdate.getTime() < 10000) {
@@ -177,11 +177,15 @@ public class ExperimentExecutor extends ServerThread {
 											.getReservationId());
 
 							if (runtimeInfo.getRemainingTime() <= 1) {
-								ExperimentContext context = manager.getContext(
-										reservation.getUser(), reservationId);
-								context.end();
+								if (!reservation.getTelescopes()
+										.contains("TADn")) {
+									ExperimentContext context = manager
+											.getContext(reservation.getUser(),
+													reservationId);
+									context.end();
 
-								action.put("end", "done");
+									action.put("end", "done");
+								}
 
 							}
 						} catch (ExperimentOperationException e) {

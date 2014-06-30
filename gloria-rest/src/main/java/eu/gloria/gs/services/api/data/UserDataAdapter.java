@@ -196,6 +196,10 @@ public class UserDataAdapter {
 			throw new UserDataAdapterException(log);
 		}
 	}
+	
+	public List<String> getOldUsers() {
+		return this.verificationService.getOldUsers();
+	}
 
 	public void requestChangePassword(String alias, String email,
 			String newPassword) throws UserDataAdapterException {

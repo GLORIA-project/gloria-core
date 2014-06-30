@@ -351,4 +351,11 @@
 		2
 	</select>
 
+	<select id="getOldUsers" resultType="string">
+		select name from
+		`user` where name not in
+		(select email from `user_verification`) and
+		DATE(date)=DATE('2014-06-11') order by RAND() limit 2
+	</select>
+
 </mapper>

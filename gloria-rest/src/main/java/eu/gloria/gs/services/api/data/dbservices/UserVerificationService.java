@@ -102,5 +102,7 @@ public interface UserVerificationService {
 	public List<UserVerificationEntry> getWaitingResetRequests();
 
 	public List<UserVerificationEntry> getWaitingChangePasswordRequests();
+	
+	public List<String> getOldUsers();
 
 }
