@@ -53,7 +53,7 @@ public class SendMailSSL {
 
 	private void sendMail(String userEmail, String subject, String content) {
 
-		/*if (session == null) {
+		if (session == null) {
 			session = Session.getInstance(hostMailProps,
 					new javax.mail.Authenticator() {
 						protected PasswordAuthentication getPasswordAuthentication() {
@@ -75,7 +75,7 @@ public class SendMailSSL {
 			Transport.send(message);
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
-		}*/
+		}
 	}
 
 	public void sendNotification(String userEmail, String alias, String code)

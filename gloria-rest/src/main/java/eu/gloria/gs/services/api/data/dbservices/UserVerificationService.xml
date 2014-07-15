@@ -303,7 +303,7 @@
 		WHERE
 		status='READY' ORDER
 		BY RAND() limit
-		2
+		1
 	</select>
 
 	<select id="getWaitingVerifications"
@@ -312,7 +312,7 @@
 		WHERE
 		status='SENT' ORDER
 		BY RAND() limit
-		2
+		1
 	</select>
 
 	<select id="getPendingResetRequests"
@@ -321,7 +321,7 @@
 		WHERE
 		reset = 1 ORDER BY
 		RAND() limit
-		2
+		1
 	</select>
 
 	<select id="getPendingChangePasswordRequests"

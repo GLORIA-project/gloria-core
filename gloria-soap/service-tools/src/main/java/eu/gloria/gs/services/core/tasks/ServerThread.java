@@ -63,7 +63,7 @@ public abstract class ServerThread extends Thread {
 		if (type.equals(LogType.INFO)) {
 			log.info(message);
 		} else if (type.equals(LogType.ERROR)) {
-			log.info(message);
+			log.error(message);
 		} else {
 			log.warn(message);
 		}
