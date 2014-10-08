@@ -166,24 +166,23 @@ public class AuthFilter extends LoggerEntity implements ContainerRequestFilter {
 					List<UserEntry> actives = userAdapter
 							.getUserInformation(name);
 
-					boolean newToken = false;
+					boolean newToken = true;
+					String selectedToken = null;
 
 					if (actives != null && actives.size() > 0) {
 						for (UserEntry user : actives) {
 							if (new Date().getTime()
 									- user.getTokenUpdateDate().getTime() > 10800000) {
-								newToken = true;
+								userAdapter
+								.deactivateToken(user.getToken());
 							} else {
-								if (!remote.equals(user.getRemote())
-										|| !userAgent.equals(user.getAgent())) {
-									userAdapter
-											.deactivateToken(user.getToken());
-									newToken = true;
+								if (remote.equals(user.getRemote())
+										&& userAgent.equals(user.getAgent())) {
+									newToken = false;
+									selectedToken = user.getToken();
 								}
 							}
 						}
-					} else {
-						newToken = true;
 					}
 
 					if (newToken) {
@@ -191,13 +190,13 @@ public class AuthFilter extends LoggerEntity implements ContainerRequestFilter {
 								actualPassword, language, userAgent, remote);
 
 						userAdapter.activateToken(token);
-						userAdapter.deactivateOtherTokens(name, token);
+						//userAdapter.deactivateOtherTokens(name, token);
 						
 						action.put("new-token", token);
 
 					} else {
-						userAdapter.updateLastDate(actives.get(0).getToken());
-						action.put("token", actives.get(0).getToken());
+						userAdapter.updateLastDate(selectedToken);
+						action.put("token", selectedToken);
 					}
 
 					sr.setAttribute("agent", userAgent);

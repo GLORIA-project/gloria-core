@@ -35,7 +35,7 @@
 		SELECT * FROM
 		`api_user`
 		WHERE
-		name=#{name_} AND active=1
+		name=#{name_} AND active=1 ORDER BY tokenCreationDate DESC
 	</select>
 
 	<select id="getByToken" resultType="eu.gloria.gs.services.api.data.dbservices.UserEntry">

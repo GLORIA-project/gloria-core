@@ -72,8 +72,8 @@ public class Users extends GResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/authenticate")
-	public Response authenticateUser(@QueryParam("verify") boolean verify) {		
-		
+	public Response authenticateUser(@QueryParam("verify") boolean verify) {
+
 		if (verify) {
 			return Response.ok(new ArrayList<>()).build();
 		}
@@ -86,27 +86,35 @@ public class Users extends GResource {
 		String userAgent = (String) request.getAttribute("agent");
 		String remote = (String) request.getAttribute("remote");
 		String language = (String) request.getAttribute("language");
-		
+
 		try {
 
 			List<UserEntry> activeSessions = userAdapter
 					.getUserInformation(user);
 
+			int i = 0;
+			String token = null;
 			if (activeSessions != null) {
 				for (UserEntry entry : activeSessions) {
-					String regRemote = entry.getRemote();
-					String regAgent = entry.getAgent();
-					if (remote.equals(regRemote) && userAgent.equals(regAgent)) {
-						return Response.ok(
-								JSONConverter.toJSON(entry.getToken())).build();
-					} else {
+					if (i > 2) {
 						userAdapter.deactivateToken(entry.getToken());
+					} else {
+						String regRemote = entry.getRemote();
+						String regAgent = entry.getAgent();
+						if (remote.equals(regRemote)
+								&& userAgent.equals(regAgent)) {
+							token = entry.getToken();
+						}
 					}
+
+					i++;
 				}
 			}
 
-			String token = userAdapter.createToken(user, password, language,
-					userAgent, remote);
+			if (token == null) {
+				token = userAdapter.createToken(user, password, language,
+						userAgent, remote);
+			}
 			return Response.ok(JSONConverter.toJSON(token)).build();
 		} catch (UserDataAdapterException | IOException e) {
 			return Response.serverError().entity(e.getMessage()).build();

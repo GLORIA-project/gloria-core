@@ -83,7 +83,7 @@ public class VerificationMonitor extends ServerThread {
 			log(LogType.WARNING, e.getMessage());
 		}
 
-		/*try {
+		try {
 			GSClientProvider.setCredentials(this.username, this.password);
 		} catch (Exception e) {
 			log(LogType.ERROR, e.getMessage());
@@ -189,49 +189,7 @@ public class VerificationMonitor extends ServerThread {
 			} catch (Exception e) {
 				log(LogType.ERROR, e.getMessage());
 			}
-		}*/
-
-		// BORRAR ESTO ----------------------------------
-		/*if (waitingOld == 10) {
-			String alias = null;
-			List<String> olds = adapter.getOldUsers();
-			if (olds != null && olds.size() > 0) {
-				String email = olds.get(0);
-
-				try {
-					if (users == null) {
-						users = GSClientProvider.getUserRepositoryClient();
-					}
-
-					UserInformation userInfo = users.getUserInformation(email);
-
-					if (alias == null || userInfo.getAlias() == null
-							|| userInfo.getAlias().equals("")) {
-						alias = userInfo.getName();
-					}
-
-					if (userInfo.getAlias() != null) {
-						alias = userInfo.getAlias();
-					}
-
-					if (!adapter.containsVerification(alias, email)) {
-						adapter.createEncodedVerification(alias, email,
-								userInfo.getPassword());
-					}
-
-				} catch (UserDataAdapterException e) {
-				} catch (UserRepositoryException e) {
-				}
-
-				try {
-					adapter.requestReset(alias, email);
-				} catch (UserDataAdapterException e) {
-				} catch (Exception e) {
-				}
-			}
-
-			waitingOld = 0;
-		}*/
+		}
 	}
 
 	private void processLogEntry(LogEntry entry, Action action) {
